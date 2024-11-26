@@ -5,13 +5,15 @@ volumes:
     name: prometheus_data
     driver: local
 
+
   grafana_data:
     name: grafana_data
     driver: local
 
 networks:
   monitoring:
-    external: true
+    name: monitoring
+
 
 services:
   prometheus:
@@ -19,33 +21,30 @@ services:
     image: prom/prometheus
     restart: unless-stopped
     volumes:
-      - './config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
       - 'prometheus_data:/prometheus'
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - './config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
     networks:
       - monitoring
     ports:
       - 9090:9090
 
-  snmp_exporter:
-    container_name: snmp_exporter
+  snmp-exporter:
+    container_name: snmp-exporter
     image: prom/snmp-exporter
     restart: unless-stopped
     networks:
       - monitoring
-
+  
   grafana:
     container_name: grafana
     image: grafana/grafana
     restart: unless-stopped
+    networks:
+      - monitoring
     volumes:
       - 'grafana_data:/var/lib/grafana'
-      - './config/grafana:/etc/grafana/provisioning/datasources'
     networks:
       - monitoring
     ports:
       - 3000:3000
+  
