@@ -34,4 +34,15 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
-    
+  
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    restart: unless-stopped
+    networks:
+      - monitoring
+    volumes:
+      - 'grafana_data:/var/lib/grafana'
+    ports:
+      - 3000:3000
+  
